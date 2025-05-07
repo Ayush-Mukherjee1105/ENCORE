@@ -16,25 +16,25 @@ const recipeCategories = [
       {
         title: "Vegan Curried Egg Sandwich",
         rating: 4.3,
-        image: "/images/bud1.jpeg?height=300&width=300",
+        image: "/images/bud1.jpeg",
          link: "https://chloeting.com/recipes/vegan-curried-egg-sandwich"
       },
       {
         title: "Falafel Waffles",
         rating: 4.4,
-        image: "/images/bud2.jpeg?height=300&width=300",
+        image: "/images/bud2.jpeg",
         link: "https://chloeting.com/recipes/falafel-waffles"
       },
       {
         title: "Healthy Sausage Egg McMuffin",
         rating: 4.5,
-        image: "/images/bud3.jpeg?height=300&width=300",
+        image: "/images/bud3.jpeg",
         link: "https://chloeting.com/recipes/healthy-sausage-egg-mcmuffin"
       },
       {
         title: "Lemon Garlic Chicken Zoodles",
         rating: 4.6,
-        image: "/images/bud4.jpeg?height=300&width=300",
+        image: "/images/bud4.jpeg",
         link: "https://chloeting.com/recipes/lemon-garlic-chicken-zoodles"
       },
     ],
@@ -47,26 +47,26 @@ const recipeCategories = [
       {
         title: "Breakfast Berry Parfait",
         rating: 4.3,
-        image: "/images/break1.jpeg?height=300&width=300",
+        image: "/images/break1.jpeg",
         link: "https://chloeting.com/recipes/breakfast-berry-parfait"
       },
       {
         title: "Fancy Avocado Toasts",
         rating: 4.4,
-        image: "/images/break2.jpeg?height=300&width=300",
+        image: "/images/break2.jpeg",
         link: "https://chloeting.com/recipes/fancy-avocado-toasts",
         
       },
       {
         title: "Shamrock Smoothie",
         rating: 4.5,
-        image: "/images/break3.jpeg?height=300&width=300",
+        image: "/images/break3.jpeg",
         link: "https://chloeting.com/recipes/shamrock-smoothie",
       },
       {
         title: "Healthy Banana Almond Oatmeal",
         rating: 4.6,
-        image: "/images/break4.jpeg?height=300&width=300",
+        image: "/images/break4.jpeg",
          link: "https://chloeting.com/recipes/healthy-banana-almond-oatmeal",
       },
     ],
@@ -79,25 +79,25 @@ const recipeCategories = [
       {
         title: "Sugar-Free Lemonade",
         rating: 4.3,
-        image: "/images/drink1.jpeg?height=300&width=300",
+        image: "/images/drink1.jpeg",
          link: "https://chloeting.com/recipes/sugar-free-lemonade",
       },
       {
         title: "Matcha Latte with Mini Taro Balls",
         rating: 4.4,
-        image: "/images/drink2.jpeg?height=300&width=300",
+        image: "/images/drink2.jpeg",
         link: "https://chloeting.com/recipes/matcha-latte-with-mini-taro-balls"
       },
       {
         title: "Milk Tea with Coffee Jelly",
         rating: 4.5,
-        image: "/images/drink3.jpeg?height=300&width=300",
+        image: "/images/drink3.jpeg",
         link: "https://chloeting.com/recipes/milk-tea-with-coffee-jelly"
       },
       {
         title: "3-Ingredient Strawberry Boba",
         rating: 4.6,
-        image: "/images/drink4.jpeg?height=300&width=300",
+        image: "/images/drink4.jpeg",
          link: "https://chloeting.com/recipes/3-ingredient-strawberry-boba"
       },
     ],
@@ -110,25 +110,25 @@ const recipeCategories = [
       {
         title: "Chickpea Burgers",
         rating: 4.3,
-        image: "/images/vegan1.jpeg?height=300&width=300",
+        image: "/images/vegan1.jpeg",
         link: "https://chloeting.com/recipes/chickpea-burgers"
       },
       {
         title: "BBQ Shredded Tofu Tacos",
         rating: 4.4,
-        image: "/images/vegan2.jpeg?height=300&width=300",
+        image: "/images/vegan2.jpeg",
             link: "https://chloeting.com/recipes/bbq-shredded-tofu-tacos"
       },
       {
         title: "Hidden Veggie Red Sauce",
         rating: 4.5,
-        image: "/images/vegan3.jpeg?height=300&width=300",
+        image: "/images/vegan3.jpeg",
           link: "https://chloeting.com/recipes/hidden-veggie-red-sauce"
       },
       {
         title: "Sesame Orange Cauliflower",
         rating: 4.6,
-        image: "/images/vegan4.jpeg?height=300&width=300",
+        image: "/images/vegan4.jpeg",
         
       },
     ],
@@ -139,28 +139,28 @@ const featuredRecipes = [
   {
     title: "Vegan Mocha Yogurt Bowl",
     rating: 4.3,
-    image: "/images/feature1.jpeg?height=300&width=300",
+    image: "/images/feature1.jpeg",
     
     link: "https://chloeting.com/recipes/vegan-mocha-yogurt-bowl"
   },
   {
     title: "Backed Avocado Eggs",
     rating: 4.6,
-    image: "/images/feature2.jpeg?height=300&width=300",
+    image: "/images/feature2.jpeg",
    
     link: "https://chloeting.com/recipes/baked-avocado-eggs"
   },
   {
     title: "Oven Baked Popcorn Chicken",
     rating: 4.5,
-    image: "/images/feature3.jpeg?height=300&width=300",
+    image: "/images/feature3.jpeg",
     
     link: "https://chloeting.com/recipes/oven-baked-popcorn-chicken"
   },
   {
     title: "Oil-Free Chipotle Spiced Nuts",
     rating: 4.5,
-    image: "/images/feature4.jpeg?height=300&width=300",
+    image: "/images/feature4.jpeg",
     
     link: "https://chloeting.com/recipes/oil-free-chipotle-spiced-nuts"
   },
