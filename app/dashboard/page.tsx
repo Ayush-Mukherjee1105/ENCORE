@@ -10,76 +10,52 @@ import { Activity, Droplet, Heart, User, LogOut, LayoutDashboard } from "lucide-
 
 export default function DashboardPage() {
   const [user, setUser] = useState<{ name: string; email: string; profileImage?: string } | null>(null)
-  const [waterIntake, setWaterIntake] = useState(0)
-  const [caloriesBurned, setCaloriesBurned] = useState(0)
-  const [workoutMinutes, setWorkoutMinutes] = useState(0)
-  const [weight, setWeight] = useState(0)
-  const [bmi, setBmi] = useState(0)
-  const [bmiCategory, setBmiCategory] = useState("")
-  const [streak, setStreak] = useState(0)
-  const [weightHistory, setWeightHistory] = useState<{ date: string; weight: number }[]>([])
-
-  const updateWaterIntake = (amount: number) => {
-    const newIntake = waterIntake + amount
-    setWaterIntake(newIntake)
-
-    const fitnessData = JSON.parse(localStorage.getItem("fitnessData") || "{}")
-    fitnessData.waterIntake = newIntake
-    localStorage.setItem("fitnessData", JSON.stringify(fitnessData))
-  }
+  const [dashboard, setDashboard] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem("user")
-    if (userData) {
-      setUser(JSON.parse(userData))
-    }
-
-    // Get fitness data from localStorage
-    const fitnessData = localStorage.getItem("fitnessData")
-    if (fitnessData) {
-      const data = JSON.parse(fitnessData)
-      setWaterIntake(data.waterIntake || 0)
-      setCaloriesBurned(data.caloriesBurned || 0)
-      setWorkoutMinutes(data.workoutMinutes || 0)
-    }
-
-    // Get profile data
-    const profileData = localStorage.getItem("profileData")
-    if (profileData) {
-      const data = JSON.parse(profileData)
-      setWeight(data.weight || 0)
-
-      // Calculate BMI
-      if (data.height && data.weight) {
-        const heightInMeters = Number(data.height) / 100
-        const weightInKg = Number(data.weight)
-        const calculatedBmi = weightInKg / (heightInMeters * heightInMeters)
-        setBmi(Number.parseFloat(calculatedBmi.toFixed(1)))
-
-        // Set BMI category
-        if (calculatedBmi < 18.5) {
-          setBmiCategory("Underweight")
-        } else if (calculatedBmi < 25) {
-          setBmiCategory("Normal")
-        } else if (calculatedBmi < 30) {
-          setBmiCategory("Overweight")
-        } else {
-          setBmiCategory("Obese")
-        }
-      }
-    }
-
-    // Get weight history
-    const weightHistoryData = localStorage.getItem("weightHistory")
-    if (weightHistoryData) {
-      setWeightHistory(JSON.parse(weightHistoryData))
-    }
-
-    // Set streak (mock data)
-    setStreak(7)
+    fetch("/api/me")
+      .then(res => {
+        if (!res.ok) throw new Error("Not authenticated")
+        return res.json()
+      })
+      .then(user => {
+        setUser(user)
+        return fetch(`/api/dashboard?email=${encodeURIComponent(user.email)}`)
+      })
+      .then(res => res.json())
+      .then(data => {
+        setDashboard(data)
+        setLoading(false)
+      })
+      .catch(() => {
+        window.location.href = "/login"
+      })
   }, [])
 
+  // Update dashboard data in MongoDB
+  const updateDashboard = (updates: any) => {
+    if (!user?.email) return
+    fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email, ...updates }),
+    })
+      .then(res => res.json())
+      .then(setDashboard)
+  }
+
+  // Water intake handlers
+  const updateWaterIntake = (amount: number) => {
+    updateDashboard({ waterIntake: (dashboard?.waterIntake || 0) + amount })
+  }
+  const resetWaterIntake = () => {
+    updateDashboard({ waterIntake: 0 })
+  }
+
+  // BMI helpers
+  const bmi = dashboard?.bmi || 0
+  const bmiCategory = dashboard?.bmiCategory || ""
   const getBmiImage = () => {
     if (bmiCategory === "Underweight") {
       return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/under1-VDkYCynP0DfhRtUslG2TTT0WueQcys.png"
@@ -92,7 +68,6 @@ export default function DashboardPage() {
     }
     return ""
   }
-
   const getBmiQuote = () => {
     if (bmiCategory === "Underweight") {
       return "Whoa there, featherweight champ! One strong breeze and you might fly away. Time to beef up—maybe add an extra scoop of ice cream!"
@@ -105,7 +80,6 @@ export default function DashboardPage() {
     }
     return ""
   }
-
   const getBmiSliderPosition = () => {
     if (!bmi) return 0
     if (bmi < 18.5) {
@@ -119,23 +93,19 @@ export default function DashboardPage() {
     }
   }
 
-  // Function to format date for display
+  // Format date for weight history
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
   }
 
-  if (!user) {
+  if (loading || !user || !dashboard) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <Card className="w-full max-w-md">
           <CardContent className="p-6">
             <div className="flex flex-col items-center">
-              <h2 className="text-2xl font-bold mb-4">Please Log In</h2>
-              <p className="mb-6 text-center">You need to log in to access the dashboard.</p>
-              <Link href="/login">
-                <Button className="btn-animated bg-green-500 hover:bg-green-600 text-white">Log In</Button>
-              </Link>
+              <h2 className="text-2xl font-bold mb-4">Loading...</h2>
             </div>
           </CardContent>
         </Card>
@@ -150,13 +120,10 @@ export default function DashboardPage() {
         <div className="w-64 bg-white h-screen border-r border-gray-200 fixed overflow-y-auto">
           <div className="p-6">
             <Link href="/" className="text-2xl font-bold flex items-center text-green-600 mb-8">
-              <span>Grub</span>
-              <span className="text-green-500">&</span>
-              <span>Grind</span>
-              <span className="text-green-500">.</span>
+              <span className="text-green-500">ENCORE</span>
+              <span>.</span>
             </Link>
           </div>
-
           <div className="px-6 mb-8">
             <div className="flex items-center">
               <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-3">
@@ -180,7 +147,6 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-
           <nav className="px-3">
             <Link href="/dashboard" className="flex items-center px-3 py-3 rounded-lg bg-green-50 text-green-600 mb-1">
               <LayoutDashboard className="mr-3 h-5 w-5" />
@@ -202,12 +168,10 @@ export default function DashboardPage() {
               <span>Health Issues</span>
             </Link>
           </nav>
-
           <div className="absolute bottom-0 left-0 right-0 p-6">
             <Button
               onClick={() => {
-                localStorage.removeItem("user")
-                window.location.href = "/"
+                fetch("/api/logout", { method: "POST" }).then(() => (window.location.href = "/"))
               }}
               variant="ghost"
               className="flex items-center w-full justify-start px-3 py-3 hover:bg-gray-100 text-gray-700"
@@ -217,12 +181,10 @@ export default function DashboardPage() {
             </Button>
           </div>
         </div>
-
         {/* Main Content */}
         <div className="ml-64 flex-1 p-8">
           <h1 className="text-2xl font-bold mb-2">Welcome back, {user.name}</h1>
           <p className="text-gray-600 mb-8">Here's an overview of your health stats</p>
-
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="bg-white">
@@ -233,12 +195,11 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Current Weight</p>
-                    <p className="text-2xl font-bold">{weight} kg</p>
+                    <p className="text-2xl font-bold">{dashboard.weight} kg</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-
             <Card className="bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center">
@@ -255,7 +216,6 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-
             <Card className="bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center">
@@ -264,12 +224,11 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Daily Water</p>
-                    <p className="text-2xl font-bold">{waterIntake}L / 4L</p>
+                    <p className="text-2xl font-bold">{dashboard.waterIntake}L / 4L</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-
             <Card className="bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center">
@@ -292,13 +251,12 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Streak</p>
-                    <p className="text-2xl font-bold">{streak} days</p>
+                    <p className="text-2xl font-bold">{dashboard.streak} days</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-
           {/* Progress Tracking */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <Card className="bg-white">
@@ -307,25 +265,20 @@ export default function DashboardPage() {
                   <Activity className="h-5 w-5 text-blue-500 mr-2" />
                   <h3 className="text-lg font-medium">Weight History</h3>
                 </div>
-
                 <div className="h-64 relative">
-                  {weightHistory.length > 0 ? (
+                  {dashboard.weightHistory && dashboard.weightHistory.length > 0 ? (
                     <div className="h-full flex flex-col">
                       <div className="flex-1 relative">
                         {/* Find min and max for scaling */}
                         {(() => {
-                          if (weightHistory.length === 0) return null
-
-                          const weights = weightHistory.map((entry) => entry.weight)
+                          const weights = dashboard.weightHistory.map((entry: any) => entry.weight)
                           const minWeight = Math.min(...weights)
                           const maxWeight = Math.max(...weights)
                           const range = maxWeight - minWeight || 10
                           const padding = range * 0.1
-
-                          const sortedHistory = [...weightHistory].sort(
+                          const sortedHistory = [...dashboard.weightHistory].sort(
                             (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
                           )
-
                           return (
                             <>
                               {/* Y-axis labels */}
@@ -333,7 +286,6 @@ export default function DashboardPage() {
                                 <span>{Math.ceil(maxWeight + padding)}kg</span>
                                 <span>{Math.floor(minWeight - padding)}kg</span>
                               </div>
-
                               {/* Graph */}
                               <div className="absolute left-12 right-0 top-0 bottom-0 flex items-end">
                                 {sortedHistory.map((entry, index) => {
@@ -365,7 +317,6 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-
             <Card className="bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -377,28 +328,20 @@ export default function DashboardPage() {
                     variant="ghost"
                     size="sm"
                     className="text-blue-500"
-                    onClick={() => {
-                      setWaterIntake(0)
-                      const fitnessData = JSON.parse(localStorage.getItem("fitnessData") || "{}")
-                      fitnessData.waterIntake = 0
-                      localStorage.setItem("fitnessData", JSON.stringify(fitnessData))
-                    }}
+                    onClick={resetWaterIntake}
                   >
                     Reset Today
                   </Button>
                 </div>
-
                 <div className="flex flex-col items-center justify-center h-64">
-                  <div className="text-5xl font-bold mb-2">{waterIntake}L</div>
-                  <div className="text-gray-500 mb-6">{Math.round((waterIntake / 4) * 100)}%</div>
-
+                  <div className="text-5xl font-bold mb-2">{dashboard.waterIntake}L</div>
+                  <div className="text-gray-500 mb-6">{Math.round((dashboard.waterIntake / 4) * 100)}%</div>
                   <div className="w-full h-8 bg-blue-100 rounded-full mb-6">
                     <div
                       className="h-full bg-blue-500 rounded-full"
-                      style={{ width: `${Math.min(100, (waterIntake / 4) * 100)}%` }}
+                      style={{ width: `${Math.min(100, (dashboard.waterIntake / 4) * 100)}%` }}
                     ></div>
                   </div>
-
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <Button
                       variant="outline"
@@ -433,7 +376,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-
           {/* BMI Indicator */}
           <Card className="bg-white">
             <CardContent className="p-6">
@@ -441,7 +383,6 @@ export default function DashboardPage() {
                 <Activity className="h-5 w-5 text-blue-500 mr-2" />
                 <h3 className="text-lg font-medium">BMI Status</h3>
               </div>
-
               <div className="mt-4">
                 <div className="flex justify-between items-center mb-2">
                   <div>
@@ -455,31 +396,28 @@ export default function DashboardPage() {
                         bmiCategory === "Underweight"
                           ? "text-blue-500"
                           : bmiCategory === "Normal"
-                            ? "text-green-500"
-                            : bmiCategory === "Overweight"
-                              ? "text-yellow-500"
-                              : "text-red-500"
+                          ? "text-green-500"
+                          : bmiCategory === "Overweight"
+                          ? "text-yellow-500"
+                          : "text-red-500"
                       }`}
                     >
                       {bmiCategory}
                     </p>
                   </div>
                 </div>
-
                 <div className="h-4 bg-gradient-to-r from-blue-500 via-green-500 via-yellow-500 to-red-500 rounded-full overflow-hidden relative">
                   <div
                     className="absolute top-0 h-full w-1 bg-white border-2 border-gray-800 transform -translate-x-1/2"
                     style={{ left: `${getBmiSliderPosition()}%` }}
                   ></div>
                 </div>
-
                 <div className="flex justify-between text-xs mt-1">
                   <span>Underweight</span>
                   <span>Normal</span>
                   <span>Overweight</span>
                   <span>Obese</span>
                 </div>
-
                 <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                   <div className="flex items-center">
                     <div className="mr-4 w-16 h-16">
@@ -497,7 +435,6 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-
           {/* Nutrition Overview */}
           <Card className="bg-white mb-6 mt-6">
             <CardContent className="p-6">
@@ -505,28 +442,27 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="p-4 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-500">Calories</p>
-                  <p className="text-xl font-bold">1,850 / 2,200</p>
-                  <Progress value={84} className="h-2 mt-2" />
+                  <p className="text-xl font-bold">{dashboard.nutrition?.calories || 0} / 2,200</p>
+                  <Progress value={Math.round(((dashboard.nutrition?.calories || 0) / 2200) * 100)} className="h-2 mt-2" />
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-500">Protein</p>
-                  <p className="text-xl font-bold">95g / 120g</p>
-                  <Progress value={79} className="h-2 mt-2" />
+                  <p className="text-xl font-bold">{dashboard.nutrition?.protein || 0}g / 120g</p>
+                  <Progress value={Math.round(((dashboard.nutrition?.protein || 0) / 120) * 100)} className="h-2 mt-2" />
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-500">Carbs</p>
-                  <p className="text-xl font-bold">210g / 250g</p>
-                  <Progress value={84} className="h-2 mt-2" />
+                  <p className="text-xl font-bold">{dashboard.nutrition?.carbs || 0}g / 250g</p>
+                  <Progress value={Math.round(((dashboard.nutrition?.carbs || 0) / 250) * 100)} className="h-2 mt-2" />
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-500">Fat</p>
-                  <p className="text-xl font-bold">65g / 70g</p>
-                  <Progress value={93} className="h-2 mt-2" />
+                  <p className="text-xl font-bold">{dashboard.nutrition?.fat || 0}g / 70g</p>
+                  <Progress value={Math.round(((dashboard.nutrition?.fat || 0) / 70) * 100)} className="h-2 mt-2" />
                 </div>
               </div>
             </CardContent>
           </Card>
-
           {/* Sleep Analysis */}
           <Card className="bg-white">
             <CardContent className="p-6">
@@ -534,19 +470,19 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="p-4 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-500">Total Sleep</p>
-                  <p className="text-xl font-bold">7h 15m</p>
+                  <p className="text-xl font-bold">{dashboard.sleep?.totalSleep || "7h 15m"}</p>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-500">Deep Sleep</p>
-                  <p className="text-xl font-bold">1h 45m</p>
+                  <p className="text-xl font-bold">{dashboard.sleep?.deepSleep || "1h 45m"}</p>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-500">Light Sleep</p>
-                  <p className="text-xl font-bold">4h 30m</p>
+                  <p className="text-xl font-bold">{dashboard.sleep?.lightSleep || "4h 30m"}</p>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-500">REM Sleep</p>
-                  <p className="text-xl font-bold">1h 00m</p>
+                  <p className="text-xl font-bold">{dashboard.sleep?.remSleep || "1h 00m"}</p>
                 </div>
               </div>
             </CardContent>

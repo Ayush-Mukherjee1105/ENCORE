@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,53 +10,55 @@ import { User, Heart, Droplet, LogOut, LayoutDashboard, Plus, X } from "lucide-r
 import { useRouter } from "next/navigation"
 
 export default function HealthIssuesPage() {
-  const router = useRouter()
   const [user, setUser] = useState<any>(null)
+  const [dashboard, setDashboard] = useState<any>(null)
   const [healthIssues, setHealthIssues] = useState<string[]>([])
   const [newIssue, setNewIssue] = useState("")
   const [message, setMessage] = useState({ type: "", text: "" })
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem("user")
-    if (userData) {
-      setUser(JSON.parse(userData))
+    fetch("/api/me")
+      .then(res => res.json())
+      .then(userData => {
+        if (!userData?.email) window.location.href = "/login"
+        setUser(userData)
+        fetch(`/api/dashboard?email=${encodeURIComponent(userData.email)}`)
+          .then(res => res.json())
+          .then(data => {
+            setDashboard(data)
+            setHealthIssues(data.healthIssues || [])
+          })
+      })
+  }, [])
 
-      // Get health issues if they exist
-      const healthData = localStorage.getItem("healthIssues")
-      if (healthData) {
-        setHealthIssues(JSON.parse(healthData))
-      }
-    } else {
-      router.push("/login")
-    }
-  }, [router])
+  const updateHealthIssues = (issues: string[]) => {
+    setHealthIssues(issues)
+    if (!user?.email) return
+    fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email, healthIssues: issues }),
+    })
+  }
 
   const handleAddIssue = () => {
     if (!newIssue.trim()) return
-
     const updatedIssues = [...healthIssues, newIssue.trim()]
-    setHealthIssues(updatedIssues)
-    localStorage.setItem("healthIssues", JSON.stringify(updatedIssues))
+    updateHealthIssues(updatedIssues)
     setNewIssue("")
-
     setMessage({ type: "success", text: "Health issue added successfully!" })
     setTimeout(() => setMessage({ type: "", text: "" }), 3000)
   }
 
   const handleRemoveIssue = (index: number) => {
     const updatedIssues = healthIssues.filter((_, i) => i !== index)
-    setHealthIssues(updatedIssues)
-    localStorage.setItem("healthIssues", JSON.stringify(updatedIssues))
-
+    updateHealthIssues(updatedIssues)
     setMessage({ type: "success", text: "Health issue removed successfully!" })
     setTimeout(() => setMessage({ type: "", text: "" }), 3000)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleAddIssue()
-    }
+    if (e.key === "Enter") handleAddIssue()
   }
 
   if (!user) {
@@ -72,10 +72,8 @@ export default function HealthIssuesPage() {
         <div className="w-64 bg-white h-screen border-r border-gray-200 fixed overflow-y-auto">
           <div className="p-6">
             <Link href="/" className="text-2xl font-bold flex items-center text-green-600 mb-8">
-              <span>Grub</span>
-              <span className="text-green-500">&</span>
-              <span>Grind</span>
-              <span className="text-green-500">.</span>
+              <span className="text-green-500">ENCORE</span>
+              <span>.</span>
             </Link>
           </div>
 
@@ -216,3 +214,4 @@ export default function HealthIssuesPage() {
     </div>
   )
 }
+

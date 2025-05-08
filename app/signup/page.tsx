@@ -20,43 +20,27 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
-
-    // Validate password
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long")
-      setIsLoading(false)
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      setIsLoading(false)
-      return
-    }
-
-    // Check if user already exists
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
-    const userExists = users.some((user: any) => user.email === email)
-
-    if (userExists) {
-      setError("User with this email already exists")
-      setIsLoading(false)
-      return
-    }
-
-    // Add new user
-    const newUser = { name, email, password }
-    users.push(newUser)
-    localStorage.setItem("users", JSON.stringify(users))
-
-    // Redirect to login page after successful signup
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password ,}),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || "Signup failed")
+        setIsLoading(false)
+        return
+      }
       router.push("/login")
-    }, 1000)
+    } catch (err) {
+      setError("Something went wrong. Please try again.")
+      setIsLoading(false)
+    }
   }
 
   return (

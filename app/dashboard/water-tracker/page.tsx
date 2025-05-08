@@ -9,56 +9,87 @@ import Link from "next/link"
 import Image from "next/image"
 
 export default function WaterTrackerPage() {
-  const [waterIntake, setWaterIntake] = useState(0)
-  const [goal, setGoal] = useState(8)
-  const [history, setHistory] = useState<{ date: string; amount: number }[]>([])
   const [user, setUser] = useState<any>(null)
+  const [dashboard, setDashboard] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem("user")
-    if (userData) {
-      setUser(JSON.parse(userData))
-    }
-
-    // Get water intake data from localStorage
-    const fitnessData = localStorage.getItem("fitnessData")
-    if (fitnessData) {
-      const data = JSON.parse(fitnessData)
-      setWaterIntake(data.waterIntake || 0)
-
-      if (data.waterHistory) {
-        setHistory(data.waterHistory)
-      }
-    }
+    fetch("/api/me")
+      .then(res => res.json())
+      .then(user => {
+        if (!user?.email) window.location.href = "/login"
+        setUser(user)
+        fetch(`/api/dashboard?email=${encodeURIComponent(user.email)}`)
+          .then(res => res.json())
+          .then(setDashboard)
+          .finally(() => setLoading(false))
+      })
   }, [])
 
-  const updateWaterIntake = (amount: number) => {
-    const newIntake = Math.max(0, waterIntake + amount)
-    setWaterIntake(newIntake)
-
-    // Update localStorage
-    const fitnessData = JSON.parse(localStorage.getItem("fitnessData") || "{}")
-    fitnessData.waterIntake = newIntake
-
-    // Update history
-    const today = new Date().toISOString().split("T")[0]
-    const historyEntry = { date: today, amount: newIntake }
-
-    let updatedHistory = [...history]
-    const todayIndex = updatedHistory.findIndex((entry) => entry.date === today)
-
-    if (todayIndex >= 0) {
-      updatedHistory[todayIndex] = historyEntry
-    } else {
-      updatedHistory = [...updatedHistory, historyEntry]
-    }
-
-    setHistory(updatedHistory)
-    fitnessData.waterHistory = updatedHistory
-
-    localStorage.setItem("fitnessData", JSON.stringify(fitnessData))
+  const updateDashboard = (updates: any) => {
+    if (!user?.email) return
+    fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email, ...updates }),
+    })
+      .then(res => res.json())
+      .then(setDashboard)
   }
+
+  const updateWaterIntake = (amount: number) => {
+    updateDashboard({ waterIntake: (dashboard?.waterIntake || 0) + amount })
+  }
+
+  const updateWaterIntakeAndHistory = (newIntake: number) => {
+    // Prepare updated waterHistory
+    const now = new Date()
+    const dateStr = now.toISOString().split("T")[0]
+    let updatedHistory = Array.isArray(dashboard?.waterHistory) ? [...dashboard.waterHistory] : []
+    const todayIndex = updatedHistory.findIndex((entry: any) => entry.date === dateStr)
+    if (todayIndex >= 0) {
+      updatedHistory[todayIndex].amount = newIntake
+    } else {
+      updatedHistory.unshift({ date: dateStr, amount: newIntake })
+    }
+    updatedHistory = updatedHistory
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 7)
+
+    // Send full dashboard update
+    fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...dashboard,
+        email: user.email,
+        waterIntake: newIntake,
+        waterHistory: updatedHistory,
+      }),
+    })
+      .then(res => res.json())
+      .then(setDashboard)
+  }
+
+  const resetWaterIntake = () => {
+    updateDashboard({ waterIntake: 0 })
+  }
+
+  const handleAddWater = (amount: number) => {
+    const newIntake = (dashboard?.waterIntake || 0) + amount
+    updateWaterIntakeAndHistory(newIntake)
+  }
+
+  const handleResetToday = () => {
+    updateWaterIntakeAndHistory(0)
+  }
+
+  const history = Array.isArray(dashboard?.waterHistory)
+    ? dashboard.waterHistory.map((entry: any) => ({
+        ...entry,
+        amount: entry.amount ?? entry.value ?? 0,
+      }))
+    : [];
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -67,10 +98,8 @@ export default function WaterTrackerPage() {
         <div className="w-64 bg-white h-screen border-r border-gray-200 fixed overflow-y-auto">
           <div className="p-6">
             <Link href="/" className="text-2xl font-bold flex items-center text-green-600 mb-8">
-              <span>Grub</span>
-              <span className="text-green-500">&</span>
-              <span>Grind</span>
-              <span className="text-green-500">.</span>
+              <span className="text-green-500">ENCORE</span>
+              <span>.</span>
             </Link>
           </div>
 
@@ -151,14 +180,14 @@ export default function WaterTrackerPage() {
                       <div className="absolute inset-0 rounded-full border-8 border-blue-100"></div>
                       <div
                         className="absolute bottom-0 left-0 right-0 bg-blue-500 rounded-b-full transition-all duration-500"
-                        style={{ height: `${Math.min(100, (waterIntake / goal) * 100)}%` }}
+                        style={{ height: `${Math.min(100, (dashboard?.waterIntake / dashboard?.goal) * 100)}%` }}
                       ></div>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                          <span className="text-5xl font-bold">{waterIntake}</span>
-                          <span className="text-xl">/</span>
-                          <span className="text-2xl">{goal}</span>
-                          <p className="text-gray-500">glasses</p>
+                          <span className="text-5xl font-bold">{dashboard?.waterIntake}</span>
+                          
+                          <span className="text-2xl">{dashboard?.goal}</span>
+                          <p className="text-gray-500">Liters</p>
                         </div>
                       </div>
                     </div>
@@ -168,14 +197,14 @@ export default function WaterTrackerPage() {
                         variant="outline"
                         size="icon"
                         className="h-12 w-12 rounded-full"
-                        onClick={() => updateWaterIntake(-1)}
-                        disabled={waterIntake <= 0}
+                        onClick={() => handleAddWater(-1)}
+                        disabled={dashboard?.waterIntake <= 0}
                       >
                         <Minus className="h-6 w-6" />
                       </Button>
                       <Button
                         className="bg-blue-500 hover:bg-blue-600 h-16 w-16 rounded-full"
-                        onClick={() => updateWaterIntake(1)}
+                        onClick={() => handleAddWater(1)}
                       >
                         <Plus className="h-8 w-8" />
                       </Button>
@@ -183,16 +212,16 @@ export default function WaterTrackerPage() {
                         variant="outline"
                         size="icon"
                         className="h-12 w-12 rounded-full"
-                        onClick={() => updateWaterIntake(0.5)}
+                        onClick={() => handleAddWater(0.5)}
                       >
                         <span className="text-sm font-medium">+0.5</span>
                       </Button>
                     </div>
 
-                    <Progress value={(waterIntake / goal) * 100} className="h-2 w-full max-w-md" />
+                    <Progress value={(dashboard?.waterIntake / dashboard?.goal) * 100} className="h-2 w-full max-w-md" />
                     <p className="mt-2 text-sm text-gray-500">
-                      {waterIntake < goal
-                        ? `${goal - waterIntake} more glasses to reach your daily goal`
+                      {dashboard?.waterIntake < dashboard?.goal
+                        ? `${dashboard?.goal - dashboard?.waterIntake} more glasses to reach your daily goal`
                         : "Daily goal reached! Great job!"}
                     </p>
                   </div>
@@ -240,7 +269,7 @@ export default function WaterTrackerPage() {
                       size="sm"
                       className="text-blue-500"
                       onClick={() => {
-                        setWaterIntake(0)
+                        handleResetToday()
                         const fitnessData = JSON.parse(localStorage.getItem("fitnessData") || "{}")
                         fitnessData.waterIntake = 0
                         localStorage.setItem("fitnessData", JSON.stringify(fitnessData))
@@ -254,9 +283,8 @@ export default function WaterTrackerPage() {
                   {history.length > 0 ? (
                     <div className="space-y-4">
                       {history
-                        .slice(-7)
-                        .reverse()
-                        .map((entry, index) => (
+                        .slice(0, 7)
+                        .map((entry: any, index: number) => (
                           <div key={index} className="flex items-center justify-between">
                             <div>
                               <p className="font-medium">

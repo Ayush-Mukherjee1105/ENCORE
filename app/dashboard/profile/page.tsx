@@ -1,7 +1,5 @@
 "use client"
 
-import Link from "next/link"
-
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,257 +11,173 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { User, Heart, Droplet } from "lucide-react"
+import Link from "next/link"
 
 export default function ProfilePage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState({ type: "", text: "" })
+
+  // Form fields (initialize with empty or profile values)
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [age, setAge] = useState("")
-  const [gender, setGender] = useState("")
+  const [gender, setGender] = useState("male")
   const [height, setHeight] = useState("")
   const [weight, setWeight] = useState("")
   const [goal, setGoal] = useState("")
   const [activityLevel, setActivityLevel] = useState("")
-  const [bmi, setBmi] = useState<number | null>(null)
-  const [bmiCategory, setBmiCategory] = useState("")
   const [profileImage, setProfileImage] = useState("")
-
-  // Nutrition tracking
   const [calories, setCalories] = useState("2200")
   const [protein, setProtein] = useState("120")
   const [carbs, setCarbs] = useState("250")
   const [fat, setFat] = useState("70")
-
-  // Sleep tracking
   const [totalSleep, setTotalSleep] = useState("7.25")
   const [deepSleep, setDeepSleep] = useState("1.75")
   const [lightSleep, setLightSleep] = useState("4.5")
   const [remSleep, setRemSleep] = useState("1")
+  const [bmi, setBmi] = useState<number | null>(null)
+  const [bmiCategory, setBmiCategory] = useState("")
+  const [weightHistory, setWeightHistory] = useState<any[]>([])
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState({ type: "", text: "" })
-
+  // Fetch user and profile data
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem("user")
-    if (userData) {
-      const parsedUser = JSON.parse(userData)
-      setUser(parsedUser)
-      setName(parsedUser.name || "")
-      setEmail(parsedUser.email || "")
-      setProfileImage(parsedUser.profileImage || "")
-
-      // Get profile data if exists
-      const profileData = localStorage.getItem("profileData")
-      if (profileData) {
-        const parsedProfile = JSON.parse(profileData)
-        setAge(parsedProfile.age || "")
-        setGender(parsedProfile.gender || "male")
-        setHeight(parsedProfile.height || "")
-        setWeight(parsedProfile.weight || "")
-        setGoal(parsedProfile.goal || "")
-        setActivityLevel(parsedProfile.activityLevel || "")
-
-        // Calculate BMI
-        if (parsedProfile.height && parsedProfile.weight) {
-          const heightInMeters = Number(parsedProfile.height) / 100
-          const weightInKg = Number(parsedProfile.weight)
-          const calculatedBmi = weightInKg / (heightInMeters * heightInMeters)
-          setBmi(Number.parseFloat(calculatedBmi.toFixed(1)))
-
-          // Set BMI category
-          if (calculatedBmi < 18.5) {
-            setBmiCategory("Underweight")
-          } else if (calculatedBmi < 25) {
-            setBmiCategory("Normal")
-          } else if (calculatedBmi < 30) {
-            setBmiCategory("Overweight")
-          } else {
-            setBmiCategory("Obese")
-          }
+    fetch("/api/me")
+      .then(res => res.json())
+      .then(user => {
+        if (!user?.email) {
+          router.push("/login")
+        } else {
+          setUser(user)
+          setEmail(user.email || "")
+          setProfileImage(user.profileImage || "")
+          fetch(`/api/dashboard?email=${encodeURIComponent(user.email)}`)
+            .then(res => res.json())
+            .then(data => {
+              setProfile(data)
+              setName(data.name || user.name || "")
+              setAge(data.age || "")
+              setGender(data.gender || "male")
+              setHeight(data.height || "")
+              setWeight(data.weight || "")
+              setGoal(data.goal || "")
+              setActivityLevel(data.activityLevel || "")
+              setCalories(data.nutrition?.calories || "2200")
+              setProtein(data.nutrition?.protein || "120")
+              setCarbs(data.nutrition?.carbs || "250")
+              setFat(data.nutrition?.fat || "70")
+              setTotalSleep(data.sleep?.totalSleep || "7.25")
+              setDeepSleep(data.sleep?.deepSleep || "1.75")
+              setLightSleep(data.sleep?.lightSleep || "4.5")
+              setRemSleep(data.sleep?.remSleep || "1")
+              setBmi(data.bmi || null)
+              setBmiCategory(data.bmiCategory || "")
+              setWeightHistory(data.weightHistory || [])
+            })
         }
-      }
-
-      // Get nutrition data
-      const nutritionData = localStorage.getItem("nutritionData")
-      if (nutritionData) {
-        const parsedNutrition = JSON.parse(nutritionData)
-        setCalories(parsedNutrition.calories || "2200")
-        setProtein(parsedNutrition.protein || "120")
-        setCarbs(parsedNutrition.carbs || "250")
-        setFat(parsedNutrition.fat || "70")
-      }
-
-      // Get sleep data
-      const sleepData = localStorage.getItem("sleepData")
-      if (sleepData) {
-        const parsedSleep = JSON.parse(sleepData)
-        setTotalSleep(parsedSleep.totalSleep || "7.25")
-        setDeepSleep(parsedSleep.deepSleep || "1.75")
-        setLightSleep(parsedSleep.lightSleep || "4.5")
-        setRemSleep(parsedSleep.remSleep || "1")
-      }
-    } else {
-      router.push("/login")
-    }
+      })
   }, [router])
 
-  const handleSaveProfile = () => {
+  // Save profile to MongoDB
+  const handleSaveProfile = async () => {
     setIsLoading(true)
     setMessage({ type: "", text: "" })
-
     try {
-      // Set default profile image based on gender if none selected
-      let profileImageToUse = profileImage
-      if (!profileImageToUse) {
-        if (gender === "female") {
-          profileImageToUse =
-            "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/female1.jpg-3tKAYSWmUZNVVEAQhTXlMtMKlh1seD.jpeg"
-        } else if (gender === "male") {
-          profileImageToUse =
-            "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/male1.jpg-sl8FBoi0YTFxpUnbsVOR0ukPlnnb8b.jpeg"
-        } else {
-          profileImageToUse =
-            "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/other1.jpg-4RxpSdENgUINWD1gLguVJ5bk6yIssT.jpeg"
-        }
-      }
-
-      // Update user data
-      const updatedUser = {
-        ...user,
-        name,
-        gender,
-        profileImage: profileImageToUse,
-      }
-      localStorage.setItem("user", JSON.stringify(updatedUser))
-      setUser(updatedUser)
-
-      // Update profile data
-      const profileData = { age, gender, height, weight, goal, activityLevel }
-      localStorage.setItem("profileData", JSON.stringify(profileData))
-
-      // Update nutrition data
-      const nutritionData = { calories, protein, carbs, fat }
-      localStorage.setItem("nutritionData", JSON.stringify(nutritionData))
-
-      // Update sleep data
-      const sleepData = { totalSleep, deepSleep, lightSleep, remSleep }
-      localStorage.setItem("sleepData", JSON.stringify(sleepData))
-
-      // Update fitness data for dashboard
-      const fitnessData = JSON.parse(localStorage.getItem("fitnessData") || "{}")
-      fitnessData.bmi = bmi
-      fitnessData.weight = weight
-      fitnessData.height = height
-      fitnessData.nutritionData = nutritionData
-      fitnessData.sleepData = sleepData
-      localStorage.setItem("fitnessData", JSON.stringify(fitnessData))
-
       // Calculate BMI
+      let calculatedBmi = null
+      let calculatedBmiCategory = ""
       if (height && weight) {
         const heightInMeters = Number(height) / 100
         const weightInKg = Number(weight)
-        const calculatedBmi = weightInKg / (heightInMeters * heightInMeters)
+        calculatedBmi = weightInKg / (heightInMeters * heightInMeters)
         setBmi(Number.parseFloat(calculatedBmi.toFixed(1)))
-
-        // Set BMI category
-        if (calculatedBmi < 18.5) {
-          setBmiCategory("Underweight")
-        } else if (calculatedBmi < 25) {
-          setBmiCategory("Normal")
-        } else if (calculatedBmi < 30) {
-          setBmiCategory("Overweight")
-        } else {
-          setBmiCategory("Obese")
-        }
+        if (calculatedBmi < 18.5) calculatedBmiCategory = "Underweight"
+        else if (calculatedBmi < 25) calculatedBmiCategory = "Normal"
+        else if (calculatedBmi < 30) calculatedBmiCategory = "Overweight"
+        else calculatedBmiCategory = "Obese"
+        setBmiCategory(calculatedBmiCategory)
       }
 
       // Update weight history
       const now = new Date()
       const dateStr = now.toISOString().split("T")[0]
-      const weightHistory = JSON.parse(localStorage.getItem("weightHistory") || "[]")
-
-      // Check if we already have an entry for today
-      const todayIndex = weightHistory.findIndex((entry: any) => entry.date === dateStr)
+      let updatedWeightHistory = [...(profile?.weightHistory || [])]
+      const todayIndex = updatedWeightHistory.findIndex((entry: any) => entry.date === dateStr)
       if (todayIndex >= 0) {
-        weightHistory[todayIndex].weight = Number(weight)
+        updatedWeightHistory[todayIndex].weight = Number(weight)
       } else {
-        weightHistory.push({
-          date: dateStr,
-          weight: Number(weight),
-        })
+        updatedWeightHistory.push({ date: dateStr, weight: Number(weight) })
       }
-
-      // Keep only the last 7 entries
-      const recentHistory = weightHistory
-        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      updatedWeightHistory = updatedWeightHistory
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 7)
 
-      localStorage.setItem("weightHistory", JSON.stringify(recentHistory))
+      // Merge all fields from profile and override with form fields
+      const updatedProfile = {
+        ...profile,
+        email,
+        name,
+        age,
+        gender,
+        height,
+        weight,
+        goal,
+        activityLevel,
+        profileImage,
+        bmi: calculatedBmi,
+        bmiCategory: calculatedBmiCategory,
+        weightHistory: updatedWeightHistory,
+        nutrition: { calories, protein, carbs, fat },
+        sleep: { totalSleep, deepSleep, lightSleep, remSleep },
+      }
 
-      setMessage({ type: "success", text: "Profile updated successfully!" })
+      const res = await fetch("/api/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedProfile),
+      })
+      if (res.ok) {
+        setMessage({ type: "success", text: "Profile updated successfully!" })
+        setProfile(updatedProfile)
+      } else {
+        setMessage({ type: "error", text: "Failed to update profile. Please try again." })
+      }
     } catch (error) {
       setMessage({ type: "error", text: "Failed to update profile. Please try again." })
     } finally {
       setIsLoading(false)
-
-      // Clear message after 3 seconds
-      setTimeout(() => {
-        setMessage({ type: "", text: "" })
-      }, 3000)
-    }
-  }
-
-  const getThemeColor = () => {
-    if (gender === "female") return "pink"
-    if (gender === "male") return "blue"
-    return "orange"
-  }
-
-  const themeColor = getThemeColor()
-
-  const getBmiImage = () => {
-    if (bmiCategory === "Underweight") {
-      return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/under1-VDkYCynP0DfhRtUslG2TTT0WueQcys.png"
-    } else if (bmiCategory === "Normal") {
-      return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/normal1-twM55yMnwxa1jZ1p7y0AYPEqIcLib5.png"
-    } else if (bmiCategory === "Overweight") {
-      return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/over1-LyVrVFLRLpf7FslkhhHs07Nec9sfLM.png"
-    } else if (bmiCategory === "Obese") {
-      return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/obese1-qtzQ5r8RKmXIzxLdLU7CXaB3NJ27Dw.png"
-    }
-    return ""
-  }
-
-  const getBmiQuote = () => {
-    if (bmiCategory === "Underweight") {
-      return "Whoa there, featherweight champ! One strong breeze and you might fly away. Time to beef up—maybe add an extra scoop of ice cream!"
-    } else if (bmiCategory === "Normal") {
-      return "You're in the Goldilocks zone—not too heavy, not too light, juuust right! Stay awesome, health ninja!"
-    } else if (bmiCategory === "Overweight") {
-      return "You're carrying a little extra happiness… mostly around the belly! Time to unfriend the fridge and follow a salad influencer!"
-    } else if (bmiCategory === "Obese") {
-      return "You're in boss mode, but your joints might not agree. Let's show those calories who's really in charge—time for a glow-up!"
-    }
-    return ""
-  }
-
-  const getBmiSliderPosition = () => {
-    if (!bmi) return 0
-    if (bmi < 18.5) {
-      return (bmi / 18.5) * 25
-    } else if (bmi < 25) {
-      return 25 + ((bmi - 18.5) / 6.5) * 25
-    } else if (bmi < 30) {
-      return 50 + ((bmi - 25) / 5) * 25
-    } else {
-      return 75 + Math.min(((bmi - 30) / 10) * 25, 25)
+      setTimeout(() => setMessage({ type: "", text: "" }), 3000)
     }
   }
 
   if (!user) {
     return <div className="min-h-screen bg-gray-100 flex items-center justify-center">Loading...</div>
+  }
+
+  function getBmiSliderPosition() {
+    if (!bmi) return 0
+    if (bmi < 18.5) return (bmi / 18.5) * 25
+    if (bmi < 25) return 25 + ((bmi - 18.5) / 6.5) * 25
+    if (bmi < 30) return 50 + ((bmi - 25) / 5) * 25
+    return 75 + Math.min(((bmi - 30) / 10) * 25, 25)
+  }
+
+  function getBmiImage() {
+    if (bmiCategory === "Underweight") return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/under1-VDkYCynP0DfhRtUslG2TTT0WueQcys.png"
+    if (bmiCategory === "Normal") return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/normal1-twM55yMnwxa1jZ1p7y0AYPEqIcLib5.png"
+    if (bmiCategory === "Overweight") return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/over1-LyVrVFLRLpf7FslkhhHs07Nec9sfLM.png"
+    if (bmiCategory === "Obese") return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/obese1-qtzQ5r8RKmXIzxLdLU7CXaB3NJ27Dw.png"
+    return ""
+  }
+
+  function getBmiQuote() {
+    if (bmiCategory === "Underweight") return "Whoa there, featherweight champ! One strong breeze and you might fly away. Time to beef up—maybe add an extra scoop of ice cream!"
+    if (bmiCategory === "Normal") return "You're in the Goldilocks zone—not too heavy, not too light, juuust right! Stay awesome, health ninja!"
+    if (bmiCategory === "Overweight") return "You're carrying a little extra happiness… mostly around the belly! Time to unfriend the fridge and follow a salad influencer!"
+    if (bmiCategory === "Obese") return "You're in boss mode, but your joints might not agree. Let's show those calories who's really in charge—time for a glow-up!"
+    return ""
   }
 
   return (
@@ -273,10 +187,8 @@ export default function ProfilePage() {
         <div className="w-64 bg-white h-screen border-r border-gray-200 fixed overflow-y-auto">
           <div className="p-6">
             <Link href="/" className="text-2xl font-bold flex items-center text-green-600 mb-8">
-              <span>Grub</span>
-              <span className="text-green-500">&</span>
-              <span>Grind</span>
-              <span className="text-green-500">.</span>
+              <span className="text-green-500">ENCORE</span>
+              <span>.</span>
             </Link>
           </div>
 

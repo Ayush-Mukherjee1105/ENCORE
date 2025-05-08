@@ -18,33 +18,34 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
-
-    // Check if user exists in localStorage
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
-    const user = users.find((u: any) => u.email === email)
-
-    if (user && user.password === password) {
-      // Set logged in user
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: user.name,
-          email: user.email,
-          gender: user.gender || "male", // Default to male if not set
-          profileImage: user.profileImage || null,
-        }),
-      )
-
-      // Redirect to dashboard
+  
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+  
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || "Login failed")
+        setIsLoading(false)
+        return
+      }
+  
+      const user = await res.json()
+      // Optionally, store user in context or cookie for session management
+  
       setTimeout(() => {
+        // Redirect to dashboard
         router.push("/dashboard")
       }, 1000)
-    } else {
-      setError("Invalid email or password")
+    } catch (err) {
+      setError("Something went wrong. Please try again.")
       setIsLoading(false)
     }
   }
