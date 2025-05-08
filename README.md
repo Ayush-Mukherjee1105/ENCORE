@@ -1,1 +1,5 @@
 Encore - Fitness Website
+Made By:
+ISHAN DEY
+AARYAN CHANDRA
+AYUSH MUKHERJEE 
