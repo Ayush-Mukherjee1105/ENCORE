@@ -73,48 +73,38 @@ const workouts = [
     "link": "https://www.youtube.com/watch?v=AGj7wEn1jLo"
   },
   {
-    title: "Perfect Back Workout",
-    instructor: "Noel Deyzel",
-    duration: "12m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BACK",
-    link: "https://youtube.com/watch?v=example3",
+    "title": "5 Tips To Grow a Bigger Back",
+    "instructor": "Noel Deyzel",
+    "duration": "20m",
+    "image": "/images/menback1.jpg",
+    "category": "BACK",
+    "link": "https://www.youtube.com/watch?v=oqA4TSF3pYk"
   },
   {
-    title: "Perfect Back Workout",
-    instructor: "Noel Deyzel",
-    duration: "12m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BACK",
-    link: "https://youtube.com/watch?v=example3",
+    "title": "Back Exercise MISTAKES You're Making That Are Holding You Back!",
+    "instructor": "JONNI SHREVE",
+    "duration": "15m",
+    "image": "/images/menback2.jpg",
+    "category": "BACK",
+    "link": "https://www.youtube.com/watch?v=fimedi6cx7E"
   },
   {
-    title: "Perfect Back Workout",
-    instructor: "Noel Deyzel",
-    duration: "12m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BACK",
-    link: "https://youtube.com/watch?v=example3",
+    "title": "Training W/ Noel Deyzel",
+    "instructor": "Noel Deyzel",
+    "duration": "10m",
+    "image": "/images/menback3.jpg",
+    "category": "BACK",
+    "link": "https://www.youtube.com/watch?v=Sm10xl2ZYpE"
   },
   {
-    title: "Perfect Back Workout",
-    instructor: "Noel Deyzel",
-    duration: "12m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BACK",
-    link: "https://youtube.com/watch?v=example3",
-  },
-  {
-    title: "Perfect Back Workout",
-    instructor: "Noel Deyzel",
-    duration: "12m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BACK",
-    link: "https://youtube.com/watch?v=example3",
+    "title": "Complete Back Development Workout",
+    "instructor": "Dr. Mike Israetel",
+    "duration": "20m",
+    "image": "/images/menback4.jpg",
+    "category": "BACK",
+    "link": "https://youtu.be/E81VwgxD45c?feature=shared"
   },
 
-
-  
   {
     title: "Complete Arm Workout",
     instructor: "Jeff Nippard",
