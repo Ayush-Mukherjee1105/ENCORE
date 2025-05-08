@@ -20,7 +20,7 @@ const workouts = [
     title: "10 Min Daily Ab Workout",
     instructor: "MadFit",
     duration: "10m",
-    image: :"/images/womencore2.jpg",
+    image:"/images/womencore2.jpg",
     category: "CORE",
     link: "https://youtu.be/DUvXoAwR-8k?feature=shared",
   },
