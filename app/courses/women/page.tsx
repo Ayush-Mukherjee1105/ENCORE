@@ -100,7 +100,7 @@ const workouts = [
     title: "15 MIN STANDING LEGS",
     instructor: "MadFit",
     duration: "15m",
-    image: "/images/womenlegs3.jpg",
+    image: "/images/womenlegs4.jpg",
     category: "LEGS",
     link: "https://youtu.be/wgTVkCWNRxk?feature=shared",
   },
