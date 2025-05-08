@@ -150,10 +150,8 @@ export default function DashboardPage() {
         <div className="w-64 bg-white h-screen border-r border-gray-200 fixed overflow-y-auto">
           <div className="p-6">
             <Link href="/" className="text-2xl font-bold flex items-center text-green-600 mb-8">
-              <span>Grub</span>
-              <span className="text-green-500">&</span>
-              <span>Grind</span>
-              <span className="text-green-500">.</span>
+              <span className="text-green-500">ENCORE</span>
+              <span>.</span>
             </Link>
           </div>
 
