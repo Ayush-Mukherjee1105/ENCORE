@@ -33,6 +33,14 @@ const workouts = [
     link: "https://youtu.be/V4sWpLJcQoU?feature=shared",
   },
   {
+    title: "10 Min Pilates Ab Workout",
+    instructor: "Cassey Ho",
+    duration: "10m",
+    image: "/images/womencore1.jpg",
+    category: "CORE",
+    link: "https://youtu.be/0K7NNWMhO1Q?feature=shared",
+  },
+  {
     title: "10 Minute Full Body Stretch",
     instructor: "Sydney Cummings",
     duration: "10m",
