@@ -33,12 +33,12 @@ const workouts = [
     link: "https://youtu.be/V4sWpLJcQoU?feature=shared",
   },
   {
-    title: "10 Min Pilates Ab Workout",
+    title: "Extreme Abs Workout",
     instructor: "Cassey Ho",
-    duration: "10m",
-    image: "/images/womencore1.jpg",
+    duration: "25m",
+    image: "/images/womencore4.jpg",
     category: "CORE",
-    link: "https://youtu.be/0K7NNWMhO1Q?feature=shared",
+    link: "https://youtu.be/cO7iMCci904?feature=shared",
   },
   {
     title: "10 Minute Full Body Stretch",
