@@ -104,48 +104,38 @@ const workouts = [
     "category": "BACK",
     "link": "https://youtu.be/E81VwgxD45c?feature=shared"
   },
-
   {
-    title: "Complete Arm Workout",
-    instructor: "Jeff Nippard",
-    duration: "18m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "ARMS",
-    link: "https://youtube.com/watch?v=example5",
+    "title": "Jeff Nippard Arm Workout",
+    "instructor": "Jeff Nippard",
+    "duration": "10m",
+    "image": "/images/menarms1.jpg",
+    "category": "ARMS",
+    "link": "https://www.youtube.com/watch?v=WQiS87M1BT0"
   },
   {
-    title: "Complete Arm Workout",
-    instructor: "Jeff Nippard",
-    duration: "18m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "ARMS",
-    link: "https://youtube.com/watch?v=example5",
+    "title": "Working Arms Like Never Before with Jeff Nippard!",
+    "instructor": "Jeff Nippard",
+    "duration": "12m",
+    "image": "/images/menarms2.jpg",
+    "category": "ARMS",
+    "link": "https://www.youtube.com/watch?v=pDImHFrz9ew"
   },
   {
-    title: "Complete Arm Workout",
-    instructor: "Jeff Nippard",
-    duration: "18m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "ARMS",
-    link: "https://youtube.com/watch?v=example5",
+    "title": "Top 4 BICEPS Exercises (Brutal Stretch!)",
+    "instructor": "Jeff Nippard",
+    "duration": "15m",
+    "image": "/images/menarms3.jpg",
+    "category": "ARMS",
+    "link": "https://www.youtube.com/watch?v=j5f_0rNkPwU"
   },
   {
-    title: "Complete Arm Workout",
-    instructor: "Jeff Nippard",
-    duration: "18m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "ARMS",
-    link: "https://youtube.com/watch?v=example5",
-  },
-  {
-    title: "Complete Arm Workout",
-    instructor: "Jeff Nippard",
-    duration: "18m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "ARMS",
-    link: "https://youtube.com/watch?v=example5",
-  },
-  
+    "title": "My Full Arm Training Routine / Physique Update",
+    "instructor": "Jeff Nippard",
+    "duration": "10m",
+    "image": "/images/menarms4.jpg",
+    "category": "ARMS",
+    "link": "https://www.youtube.com/watch?v=gStLkPCGznY"
+  }
 ]
 
 export default function MenCoursePage() {
