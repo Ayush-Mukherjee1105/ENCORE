@@ -40,50 +40,38 @@ const workouts = [
     category: "CHEST",
     link: "https://www.youtube.com/watch?v=17WEFXKOljA",
   },
-
-
   {
-    title: "5 Minute Warm Up Before Lifting",
-    instructor: "Athlean-X",
-    duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "WARM UP",
-    link: "https://youtube.com/watch?v=example2",
+    "title": "Total Body Warmup",
+    "instructor": "Athlean-X",
+    "duration": "5m",
+    "image": "/images/menwarmup1.jpg",
+    "category": "WARM UP",
+    "link": "https://www.youtube.com/watch?v=XjjxZs21nsA"
   },
   {
-    title: "5 Minute Warm Up Before Lifting",
-    instructor: "Athlean-X",
-    duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "WARM UP",
-    link: "https://youtube.com/watch?v=example2",
+    "title": "The Perfect Warm-Up Routine for Peak Performance",
+    "instructor": "Dr. Mike Israetel",
+    "duration": "5m",
+    "image": "/images/menwarmup2.jpg",
+    "category": "WARM UP",
+    "link": "https://www.youtube.com/watch?v=HdgDDSjtaLM"
   },
   {
-    title: "5 Minute Warm Up Before Lifting",
-    instructor: "Athlean-X",
-    duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "WARM UP",
-    link: "https://youtube.com/watch?v=example2",
+    "title": "8 Minute Stretching Routine",
+    "instructor": "Jared Beckstrand",
+    "duration": "8m",
+    "image": "/images/menwarmup3.jpg",
+    "category": "WARM UP",
+    "link": "https://youtu.be/FI51zRzgIe4?feature=shared"
   },
   {
-    title: "5 Minute Warm Up Before Lifting",
-    instructor: "Athlean-X",
-    duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "WARM UP",
-    link: "https://youtube.com/watch?v=example2",
+    "title": "5 Min Whole Body Stretch Routine ",
+    "instructor": "Athlean-X",
+    "duration": "5m",
+    "image": "/images/menwarmup4.jpg",
+    "category": "WARM UP",
+    "link": "https://www.youtube.com/watch?v=AGj7wEn1jLo"
   },
-  {
-    title: "5 Minute Warm Up Before Lifting",
-    instructor: "Athlean-X",
-    duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "WARM UP",
-    link: "https://youtube.com/watch?v=example2",
-  },
-
-
   {
     title: "Perfect Back Workout",
     instructor: "Noel Deyzel",
