@@ -10,156 +10,114 @@ const categories = [
   "STRETCHING",
   "BEGINNER CARDIO",
   "BASIC STRENGTH",
-  ]
+];
 
 const workouts = [
+  // WARM UP
   {
-    title: "Beginner Friendly Warm Up",
+    title: "5 MIN WARM UP FOR AT HOME WORKOUTS",
     instructor: "MadFit",
     duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "/images/basicwarmup1.jpg",
     category: "WARM UP",
-    link: "https://youtube.com/watch?v=example1",
+    link: "https://www.youtube.com/watch?v=f3zOrYCwquE",
   },
   {
-    title: "Beginner Friendly Warm Up",
+    title: "5 MIN WARM UP (No Jumping)",
     instructor: "MadFit",
     duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "/images/basicwarmup2.jpg",
     category: "WARM UP",
-    link: "https://youtube.com/watch?v=example1",
+    link: "https://www.youtube.com/watch?v=CSrBaHX3HxQ",
   },
   {
-    title: "Beginner Friendly Warm Up",
+    title: "5 MIN UPPER BODY WARM UP ROUTINE",
     instructor: "MadFit",
     duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "/images/basicwarmup3.jpg",
     category: "WARM UP",
-    link: "https://youtube.com/watch?v=example1",
+    link: "https://www.youtube.com/watch?v=mf6CZ5_7dfc",
+  },
+
+  // STRETCHING
+  {
+    title: "Total Body Stretch Routine",
+    instructor: "Cassey Ho",
+    duration: "12m",
+    image: "/images/basicstretching1.jpg",
+    category: "STRETCHING",
+    link: "https://www.youtube.com/watch?v=kKeBjBBUQyY",
   },
   {
-    title: "Beginner Friendly Warm Up",
+    title: "Ultimate Daily Stretch for Flexibility",
+    instructor: "Cassey Ho",
+    duration: "12m",
+    image: "/images/basicstretching2.jpg",
+    category: "STRETCHING",
+    link: "https://www.youtube.com/watch?v=wUXpigOkBfY",
+  },
+  {
+    title: "15 Minute Deep Stretch for Splits",
+    instructor: "Cassey Ho",
+    duration: "15m",
+    image: "/images/basicstretching3.jpg",
+    category: "STRETCHING",
+    link: "https://www.youtube.com/watch?v=GFuhJQloXu8",
+  },
+
+  // BEGINNER CARDIO
+  {
+    title: "20 min Cardio Workout - Beginner Friendly",
+    instructor: "Chloe Ting",
+    duration: "20m",
+    image: "/images/basiccardio1.jpg",
+    category: "BEGINNER CARDIO",
+    link: "https://www.youtube.com/watch?v=RAXj64BEA9Y",
+  },
+  {
+    title: "15 min Full Body HIIT - Beginner Friendly",
+    instructor: "Chloe Ting",
+    duration: "15m",
+    image: "/images/basiccardio2.jpg",
+    category: "BEGINNER CARDIO",
+    link: "https://www.youtube.com/watch?v=zy-4BbL04uU",
+  },
+  {
+    title: "20 min Full Body Workout for Beginners",
     instructor: "MadFit",
-    duration: "5m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "WARM UP",
-    link: "https://youtube.com/watch?v=example1",
-  },
-
-
-  
-  {
-    title: "Full Body Stretching Routine",
-    instructor: "Cassie Ho",
-    duration: "10m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "STRETCHING",
-    link: "https://youtube.com/watch?v=example2",
-  },
-  {
-    title: "Full Body Stretching Routine",
-    instructor: "Cassie Ho",
-    duration: "10m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "STRETCHING",
-    link: "https://youtube.com/watch?v=example2",
-  },
-  {
-    title: "Full Body Stretching Routine",
-    instructor: "Cassie Ho",
-    duration: "10m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "STRETCHING",
-    link: "https://youtube.com/watch?v=example2",
-  },
-  {
-    title: "Full Body Stretching Routine",
-    instructor: "Cassie Ho",
-    duration: "10m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "STRETCHING",
-    link: "https://youtube.com/watch?v=example2",
-  },
-  {
-    title: "Full Body Stretching Routine",
-    instructor: "Cassie Ho",
-    duration: "10m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "STRETCHING",
-    link: "https://youtube.com/watch?v=example2",
-  },
-
-
-  {
-    title: "Beginner Cardio Workout",
-    instructor: "Chloe Ting",
-    duration: "15m",
-    image: "/placeholder.svg?height=300&width=300",
+    duration: "20m",
+    image: "/images/basiccardio3.jpg",
     category: "BEGINNER CARDIO",
-    link: "https://youtube.com/watch?v=example3",
+    link: "https://www.youtube.com/watch?v=LqW9gdpctKE",
   },
-  {
-    title: "Beginner Cardio Workout",
-    instructor: "Chloe Ting",
-    duration: "15m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BEGINNER CARDIO",
-    link: "https://youtube.com/watch?v=example3",
-  },
-  {
-    title: "Beginner Cardio Workout",
-    instructor: "Chloe Ting",
-    duration: "15m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BEGINNER CARDIO",
-    link: "https://youtube.com/watch?v=example3",
-  },
-  {
-    title: "Beginner Cardio Workout",
-    instructor: "Chloe Ting",
-    duration: "15m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BEGINNER CARDIO",
-    link: "https://youtube.com/watch?v=example3",
-  },
-  
 
-
+  // BASIC STRENGTH
   {
-    title: "Basic Strength Training",
+    title: "How To Get Bigger & Stronger (Powerbuilding)",
     instructor: "Jeff Nippard",
     duration: "20m",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "/images/basicstrength1.jpg",
     category: "BASIC STRENGTH",
-    link: "https://youtube.com/watch?v=example4",
+    link: "https://www.youtube.com/watch?v=OPEDjl88P-4",
   },
   {
-    title: "Basic Strength Training",
+    title: "Perfect Beginner Workout (Sets and Reps)",
     instructor: "Jeff Nippard",
     duration: "20m",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "/images/basicstrength2.jpg",
     category: "BASIC STRENGTH",
-    link: "https://youtube.com/watch?v=example4",
+    link: "https://www.youtube.com/watch?v=ixkQaZXVQjs",
   },
   {
-    title: "Basic Strength Training",
+    title: "Minimalist Workout Plan (Under 45 mins)",
     instructor: "Jeff Nippard",
     duration: "20m",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "/images/basicstrength3.jpg",
     category: "BASIC STRENGTH",
-    link: "https://youtube.com/watch?v=example4",
+    link: "https://www.youtube.com/watch?v=eMjyvIQbn9M",
   },
-  {
-    title: "Basic Strength Training",
-    instructor: "Jeff Nippard",
-    duration: "20m",
-    image: "/placeholder.svg?height=300&width=300",
-    category: "BASIC STRENGTH",
-    link: "https://youtube.com/watch?v=example4",
-  },
+];
 
-
-  ]
 
 export default function BasicCoursePage() {
   const [activeCategory, setActiveCategory] = useState("WARM UP")
